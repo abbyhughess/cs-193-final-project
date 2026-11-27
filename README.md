@@ -11,7 +11,9 @@ I am going to build a Discord bot using Python.
   - Allow for user input and commands to create profiles
 
 # PLEASE NOTE:
-As the discord bot requires a personal token, its token cannot be shared on GitHub- otherwise, the bot cannot be used nor published. As such, you must replace "YOUR_TOKEN_HERE" with your actual token. You can achieve this by going to the 
+As the discord bot requires a personal token, its token cannot be shared on GitHub- otherwise, the bot cannot be used nor published. As such, you must replace "YOUR_TOKEN_HERE" with your actual token. You can achieve this by going to the "BOT" subpart in Discord Developer Portal. You can generate your unique token using the button beneath the "USERNAME" tab.
+**DO NOT SHARE YOUR TOKEN PUBLICLY ONLINE.**
+
 ALSO,
 **When you run the bot, you must start it in your local terminal using this piece of code:**
 # python discordbot.py
