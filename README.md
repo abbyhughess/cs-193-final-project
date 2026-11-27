@@ -1,5 +1,5 @@
 # cs-193-final-project
-I would like to make a Discord bot that is an alternative to "Pluralkit." From personal experience, as someone with a disassociative disorder, the bot can be extremely clunky and difficult to use. It is difficult to properly organize personalities that might be dormant. I would like to make a bot with superior organizational capabilities and customization.
+As a DND enthusiast, I would like to make a Discord bot that properly aids in making character profiles through the use of lists, which can be easily categorized and accessed by campaign title. In theory, it would be akin to a list within a list. It would make storing character information and notes far easier, in my experience, and it would allow for information to be centralized in one place. In addition, I would like to include features that allow for the user to roll a custom dice, which the bot would then print the outcome.
 I am going to build a Discord bot using Python.
 - Python
 - Libraries: Python or Node.js
