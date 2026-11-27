@@ -212,7 +212,7 @@ Final Roll: 19
 
 Video Walkthrough:
 
-ill add it here in a second i gotta film first :(
+![Video Walkthrough](https://youtu.be/rVwp9bc03Pg)
 
 ## Notes
 
