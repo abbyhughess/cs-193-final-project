@@ -2,7 +2,11 @@ import discord
 from discord.ext import commands
 import random
 
-TOKEN = "MTU3NTcyMjM4OTQwMzA3NDY2OQ.GwTMp2.3VkSpBUJk-1uxXWZZeZHeS93_AE05IYBfZaoFg"
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+### PLEASE ENSURE YOU REPLACE THIS LINE OF CODE WITHIN THE QUOTATION MARKS
+TOKEN = "YOUR_TOKEN_HERE"
+### PLEASE ENSURE YOU REPLACE THIS LINE OF CODE WITHIN THE QUOTATION MARKS
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 intents = discord.Intents.default()
 intents.message_content = True
