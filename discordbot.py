@@ -4,30 +4,30 @@ import random
 import json
 import os
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# REPLACE YOUR_TOKEN_HERE IN QUOTATION MARKS WITH YOUR OWN TOKEN
-TOKEN = "YOUR_TOKEN_HERE"
-# REPLACE YOUR_TOKEN_HERE IN QUOTATION MARKS WITH YOUR OWN TOKEN
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# PLEASE READ THE READ ME. FILL BLANK WITH YOUR OWN TOKEN
+TOKEN = "REPLACE_WITH_YOUR_TOKEN"
+# PLEASE READ THE READ ME. FILL BLANK WITH YOUR OWN TOKEN
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+DATA_FILE = "characters.json"
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(
+    command_prefix="!",
+    intents=intents,
+    help_command=None
+)
 
-DATA_FILE = "characters.json"
-
-
-# ------------------------
-# SAVE / LOAD DATA
-# ------------------------
 
 def load_data():
-    if os.path.exists(DATA_FILE):
+    try:
         with open(DATA_FILE, "r") as file:
             return json.load(file)
-
-    return {}
+    except:
+        return {}
 
 
 def save_data():
@@ -38,24 +38,37 @@ def save_data():
 campaigns = load_data()
 
 
-# ------------------------
-# BOT READY
-# ------------------------
+async def success(ctx):
+    try:
+        await ctx.message.add_reaction("✅")
+    except:
+        pass
+
+
+async def failure(ctx):
+    try:
+        await ctx.message.add_reaction("❌")
+    except:
+        pass
+
 
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
 
 
-# ------------------------
-# DICE COMMANDS
-# ------------------------
-
 @bot.command()
 async def roll(ctx, minimum: int, maximum: int, modifier: int = 0):
 
+    if minimum > maximum:
+        await failure(ctx)
+        await ctx.send("Minimum cannot be greater than maximum.")
+        return
+
     base_roll = random.randint(minimum, maximum)
     final_roll = base_roll + modifier
+
+    await success(ctx)
 
     await ctx.send(
         f"Base Roll: {base_roll}\n"
@@ -65,21 +78,10 @@ async def roll(ctx, minimum: int, maximum: int, modifier: int = 0):
 
 
 @bot.command()
-async def coinflip(ctx):
-
-    result = random.choice(["Heads", "Tails"])
-
-    await ctx.send(result)
-
-
-# ------------------------
-# CREATE CAMPAIGN
-# ------------------------
-
-@bot.command()
 async def newcampaign(ctx, *, campaign_name):
 
     if campaign_name in campaigns:
+        await failure(ctx)
         await ctx.send("Campaign already exists.")
         return
 
@@ -87,44 +89,50 @@ async def newcampaign(ctx, *, campaign_name):
 
     save_data()
 
+    await success(ctx)
     await ctx.send(f"Campaign '{campaign_name}' created.")
 
 
-# ------------------------
-# LIST CAMPAIGNS
-# ------------------------
+@bot.command()
+async def deletecampaign(ctx, *, campaign_name):
+
+    if campaign_name not in campaigns:
+        await failure(ctx)
+        await ctx.send("Campaign not found.")
+        return
+
+    del campaigns[campaign_name]
+
+    save_data()
+
+    await success(ctx)
+    await ctx.send(f"Deleted campaign '{campaign_name}'.")
+
 
 @bot.command()
 async def campaignslist(ctx):
 
     if len(campaigns) == 0:
+        await failure(ctx)
         await ctx.send("No campaigns found.")
         return
 
-    message = "**Campaigns**\n"
+    msg = "**Campaigns**\n"
 
-    for campaign in campaigns:
-        message += f"• {campaign}\n"
+    for campaign_name in campaigns:
+        msg += f"• {campaign_name}\n"
 
-    await ctx.send(message)
+    await success(ctx)
+    await ctx.send(msg)
 
-
-# ------------------------
-# ADD CHARACTER
-# ------------------------
 
 @bot.command()
-async def addcharacter(
-    ctx,
-    campaign,
-    name,
-    char_class,
-    level: int
-):
+async def addcharacter(ctx, campaign, name, char_class, level: int):
 
     if campaign not in campaigns:
-
-        campaigns[campaign] = {}
+        await failure(ctx)
+        await ctx.send("Campaign not found.")
+        return
 
     campaigns[campaign][name] = {
         "class": char_class,
@@ -136,21 +144,41 @@ async def addcharacter(
 
     save_data()
 
+    await success(ctx)
     await ctx.send(f"{name} added to {campaign}.")
 
 
-# ------------------------
-# UPDATE RACE
-# ------------------------
+@bot.command()
+async def deletecharacter(ctx, campaign, name):
+
+    if campaign not in campaigns:
+        await failure(ctx)
+        await ctx.send("Campaign not found.")
+        return
+
+    if name not in campaigns[campaign]:
+        await failure(ctx)
+        await ctx.send("Character not found.")
+        return
+
+    del campaigns[campaign][name]
+
+    save_data()
+
+    await success(ctx)
+    await ctx.send(f"{name} deleted.")
+
 
 @bot.command()
 async def setrace(ctx, campaign, name, *, race):
 
     if campaign not in campaigns:
+        await failure(ctx)
         await ctx.send("Campaign not found.")
         return
 
     if name not in campaigns[campaign]:
+        await failure(ctx)
         await ctx.send("Character not found.")
         return
 
@@ -158,21 +186,20 @@ async def setrace(ctx, campaign, name, *, race):
 
     save_data()
 
+    await success(ctx)
     await ctx.send("Race updated.")
 
-
-# ------------------------
-# UPDATE NOTES
-# ------------------------
 
 @bot.command()
 async def note(ctx, campaign, name, *, text):
 
     if campaign not in campaigns:
+        await failure(ctx)
         await ctx.send("Campaign not found.")
         return
 
     if name not in campaigns[campaign]:
+        await failure(ctx)
         await ctx.send("Character not found.")
         return
 
@@ -180,21 +207,40 @@ async def note(ctx, campaign, name, *, text):
 
     save_data()
 
+    await success(ctx)
     await ctx.send("Notes updated.")
 
 
-# ------------------------
-# SET IMAGE URL
-# ------------------------
+@bot.command()
+async def getnotes(ctx, campaign, name):
+
+    if campaign not in campaigns:
+        await failure(ctx)
+        await ctx.send("Campaign not found.")
+        return
+
+    if name not in campaigns[campaign]:
+        await failure(ctx)
+        await ctx.send("Character not found.")
+        return
+
+    await success(ctx)
+
+    await ctx.send(
+        f"Notes for {name}:\n{campaigns[campaign][name]['notes']}"
+    )
+
 
 @bot.command()
 async def image(ctx, campaign, name, *, url):
 
     if campaign not in campaigns:
+        await failure(ctx)
         await ctx.send("Campaign not found.")
         return
 
     if name not in campaigns[campaign]:
+        await failure(ctx)
         await ctx.send("Character not found.")
         return
 
@@ -202,21 +248,20 @@ async def image(ctx, campaign, name, *, url):
 
     save_data()
 
+    await success(ctx)
     await ctx.send("Image updated.")
 
-
-# ------------------------
-# SHOW CHARACTER
-# ------------------------
 
 @bot.command()
 async def character(ctx, campaign, name):
 
     if campaign not in campaigns:
+        await failure(ctx)
         await ctx.send("Campaign not found.")
         return
 
     if name not in campaigns[campaign]:
+        await failure(ctx)
         await ctx.send("Character not found.")
         return
 
@@ -249,17 +294,15 @@ async def character(ctx, campaign, name):
     if char["image"] != "":
         embed.set_thumbnail(url=char["image"])
 
+    await success(ctx)
     await ctx.send(embed=embed)
 
-
-# ------------------------
-# LIST CHARACTERS
-# ------------------------
 
 @bot.command()
 async def campaign(ctx, *, campaign_name):
 
     if campaign_name not in campaigns:
+        await failure(ctx)
         await ctx.send("Campaign not found.")
         return
 
@@ -268,9 +311,10 @@ async def campaign(ctx, *, campaign_name):
         color=discord.Color.green()
     )
 
-    for character_name in campaigns[campaign_name]:
+    if len(campaigns[campaign_name]) == 0:
+        embed.description = "No characters."
 
-        char = campaigns[campaign_name][character_name]
+    for character_name, char in campaigns[campaign_name].items():
 
         embed.add_field(
             name=character_name,
@@ -278,32 +322,46 @@ async def campaign(ctx, *, campaign_name):
             inline=False
         )
 
+    await success(ctx)
     await ctx.send(embed=embed)
 
 
-# ------------------------
-# HELP MENU
-# ------------------------
-
 @bot.command()
-async def commandslist(ctx):
+async def help(ctx):
+
+    await success(ctx)
 
     await ctx.send("""
-DICE
-!roll min max modifier
-!coinflip
+**DICE**
+!roll <min> <max> <modifier>
 
-CAMPAIGNS
-!newcampaign name
+**CAMPAIGNS**
+!newcampaign <name>
 !campaignslist
-!campaign campaignname
+!campaign <campaignName>
+!deletecampaign <campaignName>
 
-CHARACTERS
-!addcharacter campaign name class level
-!character campaign name
-!setrace campaign name race
-!note campaign name text
-!image campaign name imageURL
+**CHARACTERS**
+!addcharacter <campaign> <name> <class> <level>
+!character <campaign> <name>
+!deletecharacter <campaign> <name>
+
+**CUSTOMIZATION**
+!setrace <campaign> <name> <race>
+!note <campaign> <name> <text>
+!getnotes <campaign> <name>
+!image <campaign> <name> <imageURL>
+
+**IMPORTANT**
+Campaign names with spaces must be wrapped in quotes.
+
+Example:
+!campaign "Curse of Strahd"
+
+!character "Curse of Strahd" Thorin
+
+**NOTE**
+For image URLs, catbox.moe is recommended.
 """)
 
 
