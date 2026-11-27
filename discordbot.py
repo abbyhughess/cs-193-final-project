@@ -20,41 +20,16 @@ async def on_ready():
 
 
 @bot.command()
-async def ping(ctx):
-    await ctx.send("Pong!")
-
-
-@bot.command()
-async def hello(ctx):
-    await ctx.send("Hello!")
-
-
-@bot.command()
-async def bye(ctx):
-    await ctx.send("Goodbye!")
-
-
-@bot.command()
-async def roll(ctx):
-    number = random.randint(1, 6)
-    await ctx.send(f"You rolled a {number}")
+async def roll(ctx, min: int, max: int, modifier: int):
+    number = random.randint(min, max)
+    rollint = number + modifier
+    await ctx.send(f"You rolled a {rollint}. Your base roll was {number}")
 
 
 @bot.command()
 async def coinflip(ctx):
     result = random.choice(["Heads", "Tails"])
     await ctx.send(result)
-
-
-@bot.command()
-async def add(ctx, a: int, b: int):
-    await ctx.send(a + b)
-
-
-@bot.command()
-async def square(ctx, n: int):
-    await ctx.send(n * n)
-
 
 @bot.command()
 async def userinfo(ctx):
@@ -63,18 +38,12 @@ async def userinfo(ctx):
         f"User ID: {ctx.author.id}"
     )
 
-
 @bot.command()
 async def commandslist(ctx):
     await ctx.send(
         """
-!ping
-!hello
-!bye
 !roll
 !coinflip
-!add 5 10
-!square 7
 !userinfo
 """
     )
