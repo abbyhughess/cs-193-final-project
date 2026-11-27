@@ -10,5 +10,8 @@ I am going to build a Discord bot using Python.
   - Connect the scraper data to the bot's messages
   - Allow for user input and commands to create profiles
 
-PLEASE NOTE:
+# PLEASE NOTE:
 As the discord bot requires a personal token, its token cannot be shared on GitHub- otherwise, the bot cannot be used nor published. As such, you must replace "YOUR_TOKEN_HERE" with your actual token. You can achieve this by going to the 
+ALSO,
+**When you run the bot, you must start it in your local terminal using this piece of code:**
+# python discordbot.py
