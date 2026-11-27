@@ -9,3 +9,6 @@ I am going to build a Discord bot using Python.
   - Write the web scraper function
   - Connect the scraper data to the bot's messages
   - Allow for user input and commands to create profiles
+
+PLEASE NOTE:
+As the discord bot requires a personal token, its token cannot be shared on GitHub- otherwise, the bot cannot be used nor published. As such, you must replace "YOUR_TOKEN_HERE" with your actual token. You can achieve this by going to the 
